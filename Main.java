@@ -89,16 +89,15 @@ public class Main {
         return rome2ArabValue;
     }
 
-    static int romeGetEntryValue(String string) throws Exception{ // переводим арабское значение в римское (для ответа)
-        StringBuilder romanString = new StringBuilder(string);
+    static int romeGetEntryValue(String romanString) throws Exception{ // переводим арабское значение в римское (для ответа)
         int arabicNumber = 0;
         while (romanString.length() > 0) {
             for (int i = romeDigits.length-1; i >= 0; i --) {
 
-                if (romeDigits[i].length() <= romanString.length()) {
+                if (romeDigits[i].length() <= romanString.length()) {   // Важное условие, чтобы не вылетело SIOOBE
                     if (romeDigits[i].equals(romanString.substring(0, romeDigits[i].length()))) {
                         arabicNumber += romeToArabicValue(romeDigits[i]);
-                        romanString.delete(0, romeDigits[i].length());
+                        romanString = romanString.substring(romeDigits[i].length());
                     }
                 }
 
@@ -117,7 +116,7 @@ public class Main {
 
     static String arabicToRoman(int arabicNumber) throws Exception{
         if (arabicNumber <= 0)
-            throw new Exception("В римской системе счисления нет отрицательных чисел или 0");
+            throw new Exception("В римской системе счисления нет отрицательных чисел или ноля");
 
         StringBuilder builder = new StringBuilder();
         while (arabicNumber != 0){                      // floorkey возвращает ключ - (у нас число) равное или меньшее чем
