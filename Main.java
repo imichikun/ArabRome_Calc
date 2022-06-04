@@ -39,31 +39,39 @@ public class Main {
             if ( userLineArray.length != 3)
                 throw new Exception("Строка не является математической операцией!");
 
-            for (String check: romeDigits) {
-                if ( userLineArray[0].equals(check) )
-                    a = romeEntryValue(userLineArray[0]);
-            }
-
-            for (String check: romeDigits) {
-                if ( userLineArray[2].equals(check) ) {
-                    b = romeEntryValue(userLineArray[2]);
+                for (String arrayValue: romeDigits) {
+                    if (userLineArray[0].contains(arrayValue)) {
+                        a = romeToArabicValue(userLineArray[0]);
+                        checkNumberOfRomanDigits(a);
+                    }
                 }
-            }
+
+                for (String arrayValue : romeDigits) {
+                    if (userLineArray[2].contains(arrayValue)) {
+                        b = romeToArabicValue(userLineArray[2]);
+                        checkNumberOfRomanDigits(b);
+                    }
+                }
 
             if ( a != null & b != null ){
                 result = arabicToRoman(arithmeticOp(userLineArray[1]));
             }
             else if ( (a == null & b != null) || (a != null & b == null) )
                 throw new Exception("Используются разные системы счисления!");
-            else
-                result = Integer.toString(arabCalc(userLineArray[1]));
-            }
+            else {
+                    a = Integer.valueOf(userLineArray[0]);
+                    b = Integer.valueOf(userLineArray[2]);
+                    checkNumberOfArabicDigits(a, b);
 
+                    result = Integer.toString(arabCalc(userLineArray[1]));
+                }
+            } catch (NumberFormatException nfe){
+            throw new Exception("Введено вещественное число !");
+        }
             return result;
         }
 
-    static int romeEntryValue(String value) throws Exception{
-
+    static int romeToArabicValue(String value) throws Exception{    // переводим полученное римское значение в арабское
         int rome2ArabValue = switch(value){
             case "I" -> 1;
             case "II" -> 2;
@@ -75,22 +83,43 @@ public class Main {
             case "VIII" -> 8;
             case "IX" -> 9;
             case "X" -> 10;
-            default -> throw new Exception("Римские числа должны быть в диапазоне от I до X !");
+            default -> romeGetEntryValue(value);
         };
+
         return rome2ArabValue;
+    }
+
+    static int romeGetEntryValue(String string) throws Exception{ // переводим арабское значение в римское (для ответа)
+        StringBuilder romanString = new StringBuilder(string);
+        int arabicNumber = 0;
+        while (romanString.length() > 0) {
+            for (int i = romeDigits.length-1; i >= 0; i --) {
+
+                if (romeDigits[i].length() <= romanString.length()) {
+                    if (romeDigits[i].equals(romanString.substring(0, romeDigits[i].length()))) {
+                        arabicNumber += romeToArabicValue(romeDigits[i]);
+                        romanString.delete(0, romeDigits[i].length());
+                    }
+                }
+
+            }
+        }
+        return arabicNumber;
     }
 
     static int arabCalc(String value) throws Exception{
         a = Integer.valueOf(userLineArray[0]);
         b = Integer.valueOf(userLineArray[2]);
 
-        checkNumberOfDigits(a, b);
+        checkNumberOfArabicDigits(a, b);
         return arithmeticOp(value);
     }
 
-    static String arabicToRoman(int arabicNumber) {
-        StringBuilder builder = new StringBuilder();
+    static String arabicToRoman(int arabicNumber) throws Exception{
+        if (arabicNumber <= 0)
+            throw new Exception("В римской системе счисления нет отрицательных чисел или 0");
 
+        StringBuilder builder = new StringBuilder();
         while (arabicNumber != 0){                      // floorkey возвращает ключ - (у нас число) равное или меньшее чем
             int num = mapRoman.floorKey(arabicNumber);  // существующий ключ в мапе
             arabicNumber = arabicNumber - num;
@@ -111,12 +140,17 @@ public class Main {
         return mathOperationResult;
     }
 
-    static void checkNumberOfDigits(int a, int b) throws Exception{
+    static void checkNumberOfArabicDigits(int a, int b) throws Exception{
         if ( a <= 0 || a > 10 || b <= 0 || b > 10)
-            throw new Exception("Число должно быть в диапазоне от 1 до 10 !");
+            throw new Exception("Арабское число должно быть в диапазоне от 1 до 10 !");
     }
 
-    public static void main(String[] args) throws Exception{
+    static void checkNumberOfRomanDigits(int a) throws Exception {
+        if (a <= 0 || a > 10)
+            throw new Exception("Римское число должно быть в диапазоне от I до X");
+    }
+
+            public static void main(String[] args) throws Exception{
         System.out.println("Введите строку для вычисления в формате: a + b (числа от 1 до 10)");
         System.out.println(calc(readUserLine()));
     }
