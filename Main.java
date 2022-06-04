@@ -97,9 +97,9 @@ public class Main {
                 if (romeDigits[i].length() <= romanString.length()) {   // Важное условие, чтобы не вылетело SIOOBE
                     if (romeDigits[i].equals(romanString.substring(0, romeDigits[i].length()))) {
                         arabicNumber += romeToArabicValue(romeDigits[i]);
-                        romanString = romanString.substring(romeDigits[i].length());
-                    }
-                }
+                        romanString = romanString.substring(romeDigits[i].length()); // возвращаем новую строку,
+                    } //  которая теперь начинается ОТ уже использованного знака romeDigits[i].length и до конца
+                }   //  предыдущей romanString.length() (можно было сделать через StringBuilder метод delete(0,...))
 
             }
         }
